@@ -1,0 +1,22 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t frperezr/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run frperezr/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t frperezr/multi-client ./client
+  - docker build -t frperezr/multi-nginx ./nginx
+  - docker build -t frperezr/multi-server ./server
+  - docker build -t frperezr/multi-worker ./worker
+  # Login in to the Docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take those images and push them to docker hub
+  - docker push frperezr/multi-client
+  - docker push frperezr/multi-nginx
+  - docker push frperezr/multi-server
+  - docker push frperezr/multi-worker
