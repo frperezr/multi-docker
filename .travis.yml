@@ -20,3 +20,16 @@ after_success:
   - docker push frperezr/multi-nginx
   - docker push frperezr/multi-server
   - docker push frperezr/multi-worker
+
+  deploy:
+    provider: elasticbeanstalk
+    region: $AWS_REGION
+    app: multi-docker
+    env: MultiDocker-env
+    bucket_name: $AWS_BUCKET_NAME
+    bucket_path: $AWS_BUCKET_PATH
+    on:
+      branch: master
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key:
+      secure: $AWS_SECRET_KEY
